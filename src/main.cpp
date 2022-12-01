@@ -4,7 +4,7 @@
 #include "day.h"
 
 int main() {
-	std::unordered_map<int, DayFunction>& day_functions = get_day_functions();
+	std::unordered_map<int, DayFunction>& day_functions = Day::get_day_functions();
 	int day_count = day_functions.size();
 
 	std::cout << "Welcome to Advent of Code 2022 by MinusKube!" << std::endl;
@@ -15,6 +15,9 @@ int main() {
 
 	while (day < 1 || day > day_count) {
 		std::cout << "Invalid day! (1-" << day_count << ")" << std::endl;
+
+		std::cin.clear();
+		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		std::cin >> day;
 	}
 
@@ -27,9 +30,19 @@ int main() {
 	file_name += (example ? "_example.txt" : ".txt");
 
 	std::ifstream file(file_name);
-	day_functions[day](file);
 
-	std::cin.ignore(1000, '\n');
+	if (file.is_open()) {
+		std::cout << "Running day " << day << (example ? " example" : "") << " function..." << std::endl;
+		std::cout << std::endl;
+
+		day_functions[day](file);
+	}
+	else {
+		std::cout << "Error! Day file not found!" << std::endl;
+	}
+
+	std::cin.clear();
+	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	std::cin.get();
 
 	return 0;
