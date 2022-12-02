@@ -35,7 +35,12 @@ int main() {
 		std::cout << "Running day " << day << (example ? " example" : "") << " function..." << std::endl;
 		std::cout << std::endl;
 
-		day_functions[day](file);
+		try {
+			day_functions[day](file);
+		}
+		catch (const std::exception& e) {
+			std::cerr << "Error while running day " << day << (example ? " example" : "") << ": " << e.what() << std::endl;
+		}
 	}
 	else {
 		std::cout << "Error! Day file not found!" << std::endl;
