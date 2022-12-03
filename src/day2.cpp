@@ -62,49 +62,49 @@ static void run(std::ifstream& file) {
 	while (std::getline(file, line)) {
 		std::istringstream stream(line);
 
-		char firstChar;
-		stream >> firstChar;
-		Shape opponentShape = charToShape(firstChar);
+		char first_char;
+		stream >> first_char;
+		Shape opponent_shape = charToShape(first_char);
 
-		char secondChar;
-		stream >> secondChar;
+		char second_char;
+		stream >> second_char;
 
 		// Part One
 		{
-			Shape myShape = charToShape(secondChar);
+			Shape my_shape = charToShape(second_char);
 
-			if (myShape == opponentShape) {
+			if (my_shape == opponent_shape) {
 				score_p1 += 3;
 			}
-			else if (getWinningShape(opponentShape) == myShape) {
+			else if (getWinningShape(opponent_shape) == my_shape) {
 				score_p1 += 6;
 			}
 
-			score_p1 += getShapeScore(myShape);
+			score_p1 += getShapeScore(my_shape);
 		}
 
 		// Part Two
 		{
 			// We lose
-			if (secondChar == 'X') {
-				Shape myShape = getLosingShape(opponentShape);
+			if (second_char == 'X') {
+				Shape my_shape = getLosingShape(opponent_shape);
 
-				score_p2 += getShapeScore(myShape);
+				score_p2 += getShapeScore(my_shape);
 			}
 			// We draw
-			else if (secondChar == 'Y') {
+			else if (second_char == 'Y') {
 				score_p2 += 3;
-				score_p2 += getShapeScore(opponentShape);
+				score_p2 += getShapeScore(opponent_shape);
 			}
 			// We win
-			else if (secondChar == 'Z') {
-				Shape myShape = getWinningShape(opponentShape);
+			else if (second_char == 'Z') {
+				Shape my_shape = getWinningShape(opponent_shape);
 
 				score_p2 += 6;
-				score_p2 += getShapeScore(myShape);
+				score_p2 += getShapeScore(my_shape);
 			}
 			else {
-				throw std::invalid_argument("Character "s + secondChar + " is not a valid instruction."s);
+				throw std::invalid_argument("Character "s + second_char + " is not a valid instruction."s);
 			}
 		}
 	}
