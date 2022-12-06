@@ -7,40 +7,29 @@
 #include <unordered_set>
 
 #include "day.h"
-static void run(std::ifstream& file) {
-	int result_p1 = 0;
-	int result_p2 = 0;
 
-	std::string line;
-	while (std::getline(file, line)) {
-		size_t line_size = line.size();
-		for (size_t i = 3; i < line_size; i++) {
-			std::unordered_set<char> chars;
-			chars.insert(line[i - 0]);
-			chars.insert(line[i - 1]);
-			chars.insert(line[i - 2]);
-			chars.insert(line[i - 3]);
-
-			if (chars.size() == 4) {
-				result_p1 = (i + 1);
-				break;
-			}
+static int get_start_of_packet_index(const std::string& string, size_t sequence_size) {
+	size_t string_size = string.size();
+	for (size_t i = sequence_size - 1; i < string_size; i++) {
+		std::unordered_set<char> last_chars;
+		for (size_t j = 0; j < sequence_size; j++) {
+			last_chars.insert(string[i - j]);
 		}
-		for (size_t i = 13; i < line_size; i++) {
-			std::unordered_set<char> chars;
-			for (int j = 0; j < 14; j++) {
-				chars.insert(line[i - j]);
-			}
 
-			if (chars.size() == 14) {
-				result_p2 = (i + 1);
-				break;
-			}
+		if (last_chars.size() == sequence_size) {
+			return i;
 		}
 	}
 
-	print_p1_result(result_p1);
-	print_p2_result(result_p2);
+	return -1;
+}
+
+static void run(std::ifstream& file) {
+	std::string line;
+	std::getline(file, line);
+
+	print_p1_result(get_start_of_packet_index(line,  4) + 1);
+	print_p2_result(get_start_of_packet_index(line, 14) + 1);
 }
 
 static Day day(6, run);
