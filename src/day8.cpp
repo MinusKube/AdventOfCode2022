@@ -11,96 +11,59 @@
 
 typedef std::vector<std::vector<int>> Grid;
 
-static bool is_tree_visible(const Grid& grid, int row, int column) {
-	int height = grid[row][column];
+struct TreeData {
+	bool visible;
+	int scenic_score;
+};
 
-	int left_row = row - 1;
-	bool left_visible = true;
-	while (left_row >= 0) {
-		if (grid[left_row][column] >= height) {
-			left_visible = false;
-			break;
-		}
-		left_row -= 1;
-	}
-	
-	size_t right_row = row + 1;
-	bool right_visible = true;
-	while (right_row < grid.size()) {
-		if (grid[right_row][column] >= height) {
-			right_visible = false;
-			break;
-		}
-		right_row += 1;
-	}
+struct GridDirection {
+	int row;
+	int column;
+};
 
-	int top_column = column - 1;
-	bool top_visible = true;
-	while (top_column >= 0) {
-		if (grid[row][top_column] >= height) {
-			top_visible = false;
-			break;
-		}
-		top_column -= 1;
-	}
+static TreeData compute_tree_data(const Grid& grid, int row, int column) {
+	int tree_height = grid[row][column];
 
-	size_t bottom_column = column + 1;
-	bool bottom_visible = true;
-	while (bottom_column < grid[row].size()) {
-		if (grid[row][bottom_column] >= height) {
-			bottom_visible = false;
-			break;
-		}
-		bottom_column += 1;
-	}
+	int row_count = grid.size();
+	int column_count = grid[0].size();
 
-	return left_visible || right_visible || top_visible || bottom_visible;
-}
+	GridDirection directions[] = {
+		{ -1,  0 },
+		{  1,  0 },
+		{  0, -1 },
+		{  0,  1 }
+	};
 
-static int get_tree_scenic_score(const Grid& grid, int row, int column) {
-	int height = grid[row][column];
+	TreeData data;
+	data.visible = false;
+	data.scenic_score = 1;
 
-	int left_row = row - 1;
-	int left_visible = 0;
-	while (left_row >= 0) {
-		left_visible += 1;
-		if (grid[left_row][column] >= height) {
-			break;
+	for (GridDirection direction : directions) {
+		bool visible = true;
+		int view_distance = 0;
+
+		int current_row = row + direction.row;
+		int current_column = column + direction.column;
+
+		while (current_row >= 0 && current_row < row_count &&
+			   current_column >= 0 && current_column < column_count) {
+
+			view_distance += 1;
+
+			if (grid[current_row][current_column] >= tree_height) {
+				visible = false;
+				break;
+			}
+
+			current_row += direction.row;
+			current_column += direction.column;
 		}
-		left_row -= 1;
-	}
-	
-	size_t right_row = row + 1;
-	int right_visible = 0;
-	while (right_row < grid.size()) {
-		right_visible += 1;
-		if (grid[right_row][column] >= height) {
-			break;
-		}
-		right_row += 1;
+
+		data.visible = data.visible || visible;
+		data.scenic_score *= view_distance;
 	}
 
-	int top_column = column - 1;
-	int top_visible = 0;
-	while (top_column >= 0) {
-		top_visible += 1;
-		if (grid[row][top_column] >= height) {
-			break;
-		}
-		top_column -= 1;
-	}
-
-	size_t bottom_column = column + 1;
-	int bottom_visible = 0;
-	while (bottom_column < grid[row].size()) {
-		bottom_visible += 1;
-		if (grid[row][bottom_column] >= height) {
-			break;
-		}
-		bottom_column += 1;
-	}
-
-	return left_visible * right_visible * top_visible * bottom_visible;
+	return data;
 }
 
 static void run(std::ifstream& file) {
@@ -124,13 +87,14 @@ static void run(std::ifstream& file) {
 
 	for (size_t row = 0; row < grid.size(); row++) {
 		for (size_t column = 0; column < grid[row].size(); column++) {
-			if (is_tree_visible(grid, row, column)) {
+			TreeData data = compute_tree_data(grid, row, column);
+
+			if (data.visible) {
 				visible_trees += 1;
 			}
 
-			int scenic_score = get_tree_scenic_score(grid, row, column);
-			if (scenic_score > highest_scenic_score) {
-				highest_scenic_score = scenic_score;
+			if (data.scenic_score > highest_scenic_score) {
+				highest_scenic_score = data.scenic_score;
 			}
 		}
 	}
