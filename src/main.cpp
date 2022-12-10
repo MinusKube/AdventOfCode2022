@@ -6,6 +6,7 @@
 static void run_day(int day, bool example) {
 	std::string file_name;
 	file_name += "../data/day";
+	file_name += (day < 10 ? "0" : "");
 	file_name += std::to_string(day);
 	file_name += (example ? "_example.txt" : ".txt");
 
