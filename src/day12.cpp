@@ -12,8 +12,8 @@
 #include "day.h"
 
 struct Position {
-	int row;
-	int column;
+	unsigned int row;
+	unsigned int column;
 
     bool operator== (const Position& other) const {
         return row == other.row && column == other.column;
